@@ -39,6 +39,12 @@ var Peers = (function() {
       this.pc.setRemoteDescription(answer, callback);
     },
 
+    addStream: function(localStream, muted) {
+      this.stream = localStream;
+      this.setMute(muted);
+      this.pc.addStream(localStream);
+    },
+
     _onIceStateChange: function() {
       // XXX: display an error if the ice connection failed
       console.log("ice: " + this.pc.iceConnectionState);

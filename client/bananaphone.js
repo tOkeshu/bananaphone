@@ -33,6 +33,7 @@ var BananaPhone = (function() {
       var message = JSON.parse(event.data);
       this.me = message.uid;
       console.log('UID: ' + this.me);
+      this.trigger("connected", this.me);
     },
 
     _onNewBuddy: function(event) {
@@ -77,7 +78,7 @@ var BananaPhone = (function() {
 
     _setupPeer: function(peer) {
       // peer.on("icecandidate", this._newIceCandidate.bind(this, peer));
-      peer.pc.addStream(this.stream);
+      peer.addStream(this.stream, this.muted);
     },
 
     _sendOffer: function(peerId) {

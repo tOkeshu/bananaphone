@@ -2,16 +2,26 @@
   var room = window.location.pathname.split('/')[2];
   var phone = new BananaPhone(room);
   var localAudio = document.querySelector("audio");
+  var buddies = new Buddies();
+
+  phone.on("connected", function(uid) {
+    var isAvatar = true;
+    var avatar = buddies.add(uid, isAvatar);
+    document.querySelector("ul.peers").appendChild(avatar.el);
+    avatar.setStream(phone.stream);
+  });
 
   phone.on("newbuddy", function(peer) {
+    console.log("newbuddy");
+    var buddy = buddies.add(peer.id);
+
     peer.on("stream", function(remoteStream) {
-      console.log("new stream", remoteStream);
-      var audio = document.createElement('audio');
-      document.querySelector("ul.peers").appendChild(audio);
-      audio.mozSrcObject = remoteStream;
-      audio.play();
+      buddy.setStream(remoteStream);
     });
+
+    document.querySelector("ul.peers").appendChild(buddy.el);
   });
+
   phone.on("connection", function() {
     console.log("new connection");
   });
