@@ -17,8 +17,7 @@ var Buddies = (function() {
     // this.audio.addEventListener("canplay", this._plugAnalyser.bind(this));
     if (this.isAvatar)
       this.audio.muted = true;
-    else
-      this.el.addEventListener("click", this._onToggleMute.bind(this));
+    this.el.addEventListener("click", this._onToggleMute.bind(this));
   }
 
   Buddy.prototype = {
@@ -33,7 +32,13 @@ var Buddies = (function() {
     },
 
     _onToggleMute: function() {
-      this.audio.muted = !this.audio.muted;
+      if (!this.isAvatar)
+        this.audio.muted = !this.audio.muted;
+
+      if (this.el.classList.contains("muted"))
+        this.el.classList.remove("muted")
+      else
+        this.el.classList.add("muted")
     }
 
     // _soundLevel: function(sequence) {
