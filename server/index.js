@@ -43,10 +43,16 @@ app.get("/rooms/:room/signalling", function(req, res) {
 
   req.on("close", function() {
     var users = rooms[room];
-    rooms[room] = users.filter(function(user) {
+    users = rooms[room] = users.filter(function(user) {
       return user.connection !== res;
     });
     clearInterval(timer);
+
+    var event = JSON.stringify({type: 'buddyleft', peer: uid});
+    users.forEach(function(user) {
+      user.stream.write("event: buddyleft\n");
+      user.stream.write("data: " + event + "\n\n");
+    });
   });
 
   event = JSON.stringify({type: 'uid', uid: uid});

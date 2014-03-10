@@ -26,6 +26,10 @@
     document.querySelector("ul.peers").appendChild(buddy.el);
   });
 
+  phone.on("buddyleft", function(peer) {
+    buddies.get(peer.id).destroy();
+  });
+
   phone.on("connection", function() {
     console.log("new connection");
   });

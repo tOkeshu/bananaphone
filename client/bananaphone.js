@@ -23,6 +23,7 @@ var BananaPhone = (function() {
       this.source.on = this.source.addEventListener.bind(this.source);
       this.source.on("uid",          this._onUID.bind(this));
       this.source.on("newbuddy",     this._onNewBuddy.bind(this));
+      this.source.on("buddyleft",    this._onBuddyLeft.bind(this));
       this.source.on("offer",        this._onOffer.bind(this));
       this.source.on("answer",       this._onAnswer.bind(this));
       this.source.on("icecandidate", this._onIceCandidate.bind(this));
@@ -50,6 +51,11 @@ var BananaPhone = (function() {
       this._sendOffer(message.peer);
 
       this.trigger("newbuddy", this.peers.get(message.peer));
+    },
+
+    _onBuddyLeft: function(event) {
+      var message = JSON.parse(event.data);
+      this.trigger("buddyleft", this.peers.get(message.peer));
     },
 
     _onOffer: function(event) {
