@@ -45,6 +45,12 @@ var Peers = (function() {
       this.pc.addStream(localStream);
     },
 
+    setMute: function(muted) {
+      this.stream.getAudioTracks().forEach(function(track) {
+        track.enabled = !muted;
+      });
+    },
+
     _onIceStateChange: function() {
       // XXX: display an error if the ice connection failed
       console.log("ice: " + this.pc.iceConnectionState);
@@ -76,6 +82,12 @@ var Peers = (function() {
       var peer = new Peer(id, this.config);
       this.peers[id] = peer;
       this.trigger("add", peer);
+    },
+
+    forEach: function(callback) {
+      Object.keys(this.peers).forEach(function(id) {
+        callback(this.peers[id]);
+      }.bind(this));
     }
   };
 

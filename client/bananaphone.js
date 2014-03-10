@@ -4,6 +4,7 @@ var BananaPhone = (function() {
     this.peers  = new Peers();
     this.me     = undefined;
     this.stream = undefined;
+    this.muted  = false;
   }
 
   BananaPhone.prototype = {
@@ -27,6 +28,13 @@ var BananaPhone = (function() {
       this.source.on("icecandidate", this._onIceCandidate.bind(this));
 
       this.peers.on("add", this._setupPeer.bind(this));
+    },
+
+    toggleMyMuteState: function() {
+      this.muted = !this.muted;
+      this.peers.forEach(function(peer) {
+        peer.setMute(this.muted);
+      }.bind(this));
     },
 
     _onUID: function(event) {

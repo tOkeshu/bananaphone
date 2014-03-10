@@ -9,6 +9,10 @@
     var avatar = buddies.add(uid, isAvatar);
     document.querySelector("ul.peers").appendChild(avatar.el);
     avatar.setStream(phone.stream);
+
+    avatar.el.addEventListener("click", function() {
+      phone.toggleMyMuteState();
+    });
   });
 
   phone.on("newbuddy", function(peer) {
