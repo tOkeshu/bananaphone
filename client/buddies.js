@@ -5,7 +5,7 @@ var Buddies = (function() {
     this.el.innerHTML =
       '<img class="avatar" src="/static/banana-dog.jpg">' +
       '  <audio></audio>' +
-      '<div class="feedback">' +
+      '<div class="feedback hidden">' +
       '  <div class="level"></div>' +
       '</div>';
     this.el.querySelector("img").setAttribute("title", id);
