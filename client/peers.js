@@ -52,6 +52,11 @@ var Peers = (function() {
       this.pc.addStream(localStream);
     },
 
+    addIceCandidate: function(candidate) {
+      candidate = new mozRTCIceCandidate(candidate);
+      this.pc.addIceCandidate(candidate);
+    },
+
     setMute: function(muted) {
       this.stream.getAudioTracks().forEach(function(track) {
         track.enabled = !muted;

@@ -69,10 +69,11 @@ var BananaPhone = (function() {
     },
 
     _onIceCandidate: function(event) {
-      // TODO: implement Peer#addIceCandidate
+      var message = JSON.parse(event.data);
+      this.peers.get(message.peer).addIceCandidate(message.candidate);
     },
 
-    _newIceCandidate: function(event, peer) {
+    _newIceCandidate: function(peer, event) {
       if (event.candidate) {
         this._post({
           type: 'iceCandidate',
@@ -83,7 +84,7 @@ var BananaPhone = (function() {
     },
 
     _setupPeer: function(peer) {
-      // peer.on("icecandidate", this._newIceCandidate.bind(this, peer));
+      peer.on("icecandidate", this._newIceCandidate.bind(this, peer));
       peer.addStream(this.stream, this.muted);
     },
 
