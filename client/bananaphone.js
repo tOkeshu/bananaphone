@@ -10,14 +10,6 @@ var BananaPhone = (function() {
   BananaPhone.prototype = {
     start: function(stream) {
       this.stream = stream;
-      this.config = {
-        iceServers: [{
-          // please contact me if you plan to use this server
-          url: 'turn:webrtc.monkeypatch.me:6424?transport=udp',
-          credential: 'hibuddy',
-          username: 'hibuddy'
-        }]
-      };
 
       this.source = new EventSource("/rooms/" + this.room + "/signalling");
       this.source.on = this.source.addEventListener.bind(this.source);
@@ -68,11 +60,11 @@ var BananaPhone = (function() {
 
     _onAnswer: function(event) {
       var message = JSON.parse(event.data);
-      console.log("answer", message.answer);
+      // console.log("answer", message.answer);
 
       this.peers.get(message.peer).complete(message.answer, function() {
-        console.log("done");
-        console.log("peers:", this.peers);
+        // console.log("done");
+        // console.log("peers:", this.peers);
       }.bind(this));
     },
 

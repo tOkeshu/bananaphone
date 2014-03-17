@@ -1,7 +1,14 @@
 var Peers = (function() {
 
   function Peer(id, config) {
-    var pc = new mozRTCPeerConnection(config);
+    var pc = new mozRTCPeerConnection({
+      iceServers: [{
+        // please contact me if you plan to use this server
+        url: 'turn:webrtc.monkeypatch.me:6424?transport=udp',
+        credential: 'hibuddy',
+        username: 'hibuddy'
+      }]
+    });
     pc.onaddstream = function(event) {
       this.trigger("stream", event.stream);
     }.bind(this);
@@ -70,7 +77,6 @@ var Peers = (function() {
 
   function Peers(config) {
     this.peers = {};
-    this.config = config;
   }
 
   Peers.prototype = {
@@ -79,7 +85,7 @@ var Peers = (function() {
     },
 
     add: function(id) {
-      var peer = new Peer(id, this.config);
+      var peer = new Peer(id);
       this.peers[id] = peer;
       this.trigger("add", peer);
     },
