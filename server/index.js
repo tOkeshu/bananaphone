@@ -1,12 +1,11 @@
 var crypto  = require('crypto');
 var express = require('express');
 var app = express();
-var rooms = {toto: []};
+var rooms = {};
 var counter = 0;
 
-console.log(__dirname);
-
 app.use(express.json());
+app.use(express.urlencoded());
 app.use('/static/lib', express.static(__dirname + '/../bower_components'));
 app.use('/static', express.static(__dirname + '/../client'));
 
