@@ -6,7 +6,6 @@ var counter = 0;
 
 app.use(express.json());
 app.use(express.urlencoded());
-app.use('/static/lib', express.static(__dirname + '/../bower_components'));
 app.use('/static', express.static(__dirname + '/../client'));
 
 app.get("/", function(req, res) {
