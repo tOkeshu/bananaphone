@@ -3,12 +3,13 @@ var Buddies = (function() {
   function Buddy(id, isAvatar) {
     this.el = document.createElement("div");
     this.el.innerHTML =
-      '<img class="avatar" src="/static/banana-dog.jpg">' +
+      '<img class="avatar" src="/static/k.png">' +
       '  <audio></audio>' +
       '<div class="feedback hidden">' +
       '  <div class="level"></div>' +
       '</div>';
     this.el.querySelector("img").setAttribute("title", id);
+    this.el.querySelector("img").style.backgroundColor = "#" + id.slice(-6);
 
     this.audio = this.el.querySelector("audio");
     this.id = id;
