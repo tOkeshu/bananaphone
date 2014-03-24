@@ -10,6 +10,8 @@ var Buddies = (function() {
       '</div>';
     this.el.querySelector("img").setAttribute("title", id);
     this.el.querySelector("img").style.backgroundColor = "#" + id.slice(-6);
+    if (isAvatar)
+      this.el.classList.add("me");
 
     this.audio = this.el.querySelector("audio");
     this.id = id;
