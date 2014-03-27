@@ -1,7 +1,7 @@
 var Peers = (function() {
 
   function Peer(id, config) {
-    var pc = new mozRTCPeerConnection({
+    var pc = new RTCPeerConnection({
       iceServers: [{
         // please contact me if you plan to use this server
         url: 'turn:webrtc.monkeypatch.me:6424?transport=udp',
@@ -31,7 +31,7 @@ var Peers = (function() {
     },
 
     createAnswer: function(offer, callback) {
-      offer = new mozRTCSessionDescription(offer);
+      offer = new RTCSessionDescription(offer);
       this.pc.setRemoteDescription(offer, function() {
         this.pc.createAnswer(function(answer) {
           this.pc.setLocalDescription(answer, function() {
@@ -42,7 +42,7 @@ var Peers = (function() {
     },
 
     complete: function(answer, callback) {
-      answer = new mozRTCSessionDescription(answer);
+      answer = new RTCSessionDescription(answer);
       this.pc.setRemoteDescription(answer, callback);
     },
 
@@ -53,7 +53,7 @@ var Peers = (function() {
     },
 
     addIceCandidate: function(candidate) {
-      candidate = new mozRTCIceCandidate(candidate);
+      candidate = new RTCIceCandidate(candidate);
       this.pc.addIceCandidate(candidate);
     },
 

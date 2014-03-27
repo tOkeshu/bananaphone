@@ -37,8 +37,8 @@
     console.log("failure");
   });
 
-  navigator.mozGetUserMedia({audio: true}, function(localStream) {
-    localAudio.mozSrcObject = localStream;
+  navigator.getUserMedia({audio: true}, function(localStream) {
+    localAudio.src = URL.createObjectURL(localStream);
     localAudio.play();
 
     phone.start(localStream);

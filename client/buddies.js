@@ -25,7 +25,7 @@ var Buddies = (function() {
 
   Buddy.prototype = {
     setStream: function(stream) {
-      this.audio.mozSrcObject = stream;
+      this.audio.src = URL.createObjectURL(stream);
       this.audio.play();
       this.audio.controls = true;
     },
