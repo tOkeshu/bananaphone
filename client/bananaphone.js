@@ -76,7 +76,7 @@ var BananaPhone = (function() {
     _newIceCandidate: function(peer, event) {
       if (event.candidate) {
         this._post({
-          type: 'iceCandidate',
+          type: 'icecandidate',
           candidate: event.candidate,
           peer: peer.id
         });
