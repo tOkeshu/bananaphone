@@ -2,7 +2,6 @@ var crypto  = require('crypto');
 var express = require('express');
 var app = express();
 var rooms = {};
-var counter = 0;
 
 app.use(express.json());
 app.use(express.urlencoded());
