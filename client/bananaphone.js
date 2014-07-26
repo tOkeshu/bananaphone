@@ -3,6 +3,7 @@ var BananaPhone = (function() {
     this.room   = room;
     this.peers  = new Peers();
     this.me     = undefined;
+    this.token  = undefined;
     this.stream = undefined;
     this.muted  = false;
   }
@@ -11,7 +12,7 @@ var BananaPhone = (function() {
     start: function(stream) {
       this.stream = stream;
 
-      this.source = new EventSource("/rooms/" + this.room + "/signalling");
+      this.source = new EventSource("/api/rooms/" + this.room);
       this.source.on = this.source.addEventListener.bind(this.source);
       this.source.on("uid",          this._onUID.bind(this));
       this.source.on("newbuddy",     this._onNewBuddy.bind(this));
@@ -33,7 +34,10 @@ var BananaPhone = (function() {
     _onUID: function(event) {
       var message = JSON.parse(event.data);
       this.me = message.uid;
+      this.token = message.token;
+
       console.log('UID: ' + this.me);
+      console.log('TOKEN: ' + this.token);
       this.trigger("connected", this.me);
     },
 
@@ -77,8 +81,8 @@ var BananaPhone = (function() {
       if (event.candidate) {
         this._post({
           type: 'icecandidate',
-          candidate: event.candidate,
-          peer: peer.id
+          peer: peer.id,
+          payload: {candidate: event.candidate}
         });
       }
     },
@@ -90,22 +94,23 @@ var BananaPhone = (function() {
 
     _sendOffer: function(peerId) {
       this.peers.get(peerId).createOffer(function(offer) {
-        this._post({type: 'offer', offer: offer, peer: peerId});
+        this._post({type: 'offer', peer: peerId, payload: {offer: offer}});
       }.bind(this));
     },
 
     _sendAnswer: function(peerId, offer) {
       this.peers.get(peerId).createAnswer(offer, function(answer) {
-        this._post({type: 'answer', answer: answer, peer: peerId});
+        this._post({type: 'answer', peer: peerId, payload: {answer: answer}});
       }.bind(this));
     },
 
-    _post: function(data) {
+    _post: function(message) {
       var xhr = new XMLHttpRequest();
-      xhr.open('POST', '/rooms/' + this.room + '/signalling', true);
+      message.token = this.token;
+
+      xhr.open('POST', '/api/rooms/' + this.room, true);
       xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-      xhr.setRequestHeader('UID', this.me);
-      xhr.send(JSON.stringify(data));
+      xhr.send(JSON.stringify(message));
     }
   };
 

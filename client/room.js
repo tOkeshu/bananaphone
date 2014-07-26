@@ -16,7 +16,7 @@
   });
 
   phone.on("newbuddy", function(peer) {
-    console.log("newbuddy");
+    console.log("newbuddy", peer.id);
     var buddy = buddies.add(peer.id);
 
     peer.on("stream", function(remoteStream) {
