@@ -1,16 +1,18 @@
-var Peers = (function() {
+var Peer = (function() {
+  var CONFIG = {
+    iceServers: [{
+      // please contact me if you plan to use this server
+      url: 'turn:webrtc.monkeypatch.me:1025?transport=udp',
+      credential: 'hibuddy',
+      username: 'hibuddy'
+    }]
+  };
 
-  function Peer(id, config) {
-    var pc = new RTCPeerConnection({
-      iceServers: [{
-        // please contact me if you plan to use this server
-        url: 'turn:webrtc.monkeypatch.me:1025?transport=udp',
-        credential: 'hibuddy',
-        username: 'hibuddy'
-      }]
-    });
+  function Peer(id) {
+    var pc = new RTCPeerConnection(CONFIG);
     pc.onaddstream = function(event) {
-      this.trigger("stream", event.stream);
+      this.audio.src = URL.createObjectURL(event.stream);
+      this.audio.play();
     }.bind(this);
     pc.oniceconnectionstatechange = this._onIceStateChange.bind(this);
     pc.onicecandidate = function(event) {
@@ -19,15 +21,20 @@ var Peers = (function() {
 
     this.id = id;
     this.pc = pc;
+    this.audio = document.createElement("audio");
   }
 
   Peer.prototype = {
+    get muted(){
+      return this.audio.muted;
+    },
+
     createOffer: function(callback) {
       this.pc.createOffer(function(offer) {
         this.pc.setLocalDescription(offer, function() {
           callback(offer);
-        });
-      }.bind(this), function() {});
+        }, this._onError.bind(this));
+      }.bind(this), this._onError.bind(this));
     },
 
     createAnswer: function(offer, callback) {
@@ -36,19 +43,19 @@ var Peers = (function() {
         this.pc.createAnswer(function(answer) {
           this.pc.setLocalDescription(answer, function() {
             callback(answer)
-          });
-        }.bind(this), function() {});
-      }.bind(this), function() {});
+          }, this._onError.bind(this));
+        }.bind(this), this._onError.bind(this));
+      }.bind(this), this._onError.bind(this));
     },
 
     complete: function(answer, callback) {
       answer = new RTCSessionDescription(answer);
-      this.pc.setRemoteDescription(answer, callback);
+      this.pc.setRemoteDescription(answer, callback, this._onError.bind(this));
     },
 
     addStream: function(localStream, muted) {
       this.stream = localStream;
-      this.setMute(muted);
+      this.setOutboundMute(muted);
       this.pc.addStream(localStream);
     },
 
@@ -57,10 +64,14 @@ var Peers = (function() {
       this.pc.addIceCandidate(candidate);
     },
 
-    setMute: function(muted) {
+    setOutboundMute: function(muted) {
       this.stream.getAudioTracks().forEach(function(track) {
         track.enabled = !muted;
       });
+    },
+
+    toggleInboundMute: function() {
+      this.audio.muted = !this.audio.muted;
     },
 
     _onIceStateChange: function() {
@@ -73,37 +84,14 @@ var Peers = (function() {
 
       if (this.pc.iceConnectionState === "connected")
         this.trigger("connected");
+    },
+
+    _onError: function(error) {
+      console.error(error);
     }
   };
 
   MicroEvent.mixin(Peer);
   Peer.prototype.on = Peer.prototype.bind;
-
-
-  function Peers(config) {
-    this.peers = {};
-  }
-
-  Peers.prototype = {
-    get: function(id) {
-      return this.peers[id];
-    },
-
-    add: function(id) {
-      var peer = new Peer(id);
-      this.peers[id] = peer;
-      this.trigger("add", peer);
-    },
-
-    forEach: function(callback) {
-      Object.keys(this.peers).forEach(function(id) {
-        callback(this.peers[id]);
-      }.bind(this));
-    }
-  };
-
-  MicroEvent.mixin(Peers);
-  Peers.prototype.on = Peers.prototype.bind;
-
-  return Peers;
+  return Peer;
 }());

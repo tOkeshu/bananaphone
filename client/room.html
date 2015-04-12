@@ -5,7 +5,7 @@
     <title>Banana Phone</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="/static/bananaphone.css" rel="stylesheet">
+    <link href="/static/styles/bananaphone.css" rel="stylesheet">
   </head>
 
   <body>
@@ -14,13 +14,16 @@
       <ul class="peers"></ul>
     </article>
 
-    <audio id="local-audio" muted></audio>
+    <script type="text/javascript" src="/static/vendor/shaven.js"></script>
+    <script type="text/javascript" src="/static/vendor/microevent.js"></script>
+    <script type="text/javascript" src="/static/vendor/webrtc-shim.js"></script>
 
-    <script type="text/javascript" src="/static/lib/microevent.js"></script>
-    <script type="text/javascript" src="/static/lib/webrtc-shim.js"></script>
-    <script type="text/javascript" src="/static/peers.js"></script>
-    <script type="text/javascript" src="/static/buddies.js"></script>
-    <script type="text/javascript" src="/static/bananaphone.js"></script>
+    <script type="text/javascript" src="/static/flux/state.js"></script>
+    <script type="text/javascript" src="/static/flux/dispatcher.js"></script>
+    <script type="text/javascript" src="/static/models/peers.js"></script>
+    <script type="text/javascript" src="/static/views/buddies.js"></script>
+    <script type="text/javascript" src="/static/views/app.js"></script>
+
     <script type="text/javascript" src="/static/room.js"></script>
 
   </body>
