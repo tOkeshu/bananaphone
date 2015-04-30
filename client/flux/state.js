@@ -6,6 +6,24 @@ window.Banana.state = (function() {
     }.bind(this));
 
   }
+
+  State.prototype = {
+    get avatar() {
+      return this._avatar || this.defaultAvatar;
+    },
+
+    set avatar(buffer) {
+      this._avatar = buffer;
+    },
+
+    get blobAvatar() {
+      if (!this.avatar)
+        return null;
+
+      return new Blob([this.avatar], {type: this.mimetype});
+    }
+  }
+
   MicroEvent.mixin(State);
   State.prototype.listen = State.prototype.bind;
   State.prototype.notify = State.prototype.trigger;

@@ -2,6 +2,18 @@ window.Banana = window.Banana || {};
 window.Banana.actions = (function() {
   var state = Banana.state;
 
+  function readFile(file) {
+    return new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+
+      reader.onload = function(event) {
+        var blob = event.target.result;
+        resolve(blob);
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
   function Dispatcher() {
     this.source = null;
     this.stream = null;
@@ -47,6 +59,14 @@ window.Banana.actions = (function() {
       }
 
       state.notify(`peers:${id}:mute`);
+    },
+
+    importAvatar: function(file) {
+      readFile(file).then(function(avatar) {
+        console.log(avatar);
+        state.avatar = avatar;
+        state.notify("avatar");
+      });
     },
 
     _onUID: function(event) {

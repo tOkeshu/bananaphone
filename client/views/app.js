@@ -12,7 +12,12 @@ var App = (function() {
     state.listen("connected", this.connected.bind(this));
     state.listen("peers:add", this.addBuddy.bind(this));
     state.listen("peers:remove", this.removeBuddy.bind(this));
+    state.listen("avatar", this.updateAvatar.bind(this));
 
+    this.el.querySelector('.take-picture')
+      .addEventListener("click", this.onTakePicture.bind(this));
+    this.el.querySelector('input[type=file]')
+      .addEventListener("change", this.onFiles.bind(this));
     this.el.querySelector('[data-name=form]')
       .addEventListener("submit", this.joinRoom.bind(this));
   }
@@ -22,6 +27,20 @@ var App = (function() {
       event.preventDefault();
       var nickname = this.el.querySelector('input[type=text]').value;
       actions.joinRoom(nickname);
+    },
+
+    onTakePicture: function(event) {
+      event.preventDefault();
+      this.el.querySelector('input[type=file]').click();
+    },
+
+    onFiles: function(event) {
+      actions.importAvatar(event.target.files[0]);
+    },
+
+    updateAvatar: function() {
+      var avatar = this.el.querySelector('img.avatar');
+      avatar.src = URL.createObjectURL(state.blobAvatar);
     },
 
     switchPanel: function() {
