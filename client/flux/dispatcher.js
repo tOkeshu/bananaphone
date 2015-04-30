@@ -14,11 +14,24 @@ window.Banana.actions = (function() {
     });
   }
 
+  function dataUrlToArrayBuffer(dataUrl) {
+    var binStr = atob(dataUrl.split(',')[1]);
+    var len    = binStr.length;
+    var buffer = new Uint8Array(len);
+
+    for (var i = 0; i < len; i++) {
+      buffer[i] = binStr.charCodeAt(i);
+    }
+
+    return buffer;
+  }
+
   function Dispatcher() {
     this.source = null;
     this.stream = null;
 
     state.listen("peers:add", this._setupPeer.bind(this));
+    state.listen("nickname", this._generateDefaultAvatar.bind(this));
   }
 
   Dispatcher.prototype = {
@@ -28,6 +41,11 @@ window.Banana.actions = (function() {
       }.bind(this), function(err) {
         console.error("getUserMedia Failed: " + err);
       });
+      state.nickname = nickname;
+      state.notify("nickname");
+    },
+
+    updateNickname: function(nickname) {
       state.nickname = nickname;
       state.notify("nickname");
     },
@@ -65,6 +83,17 @@ window.Banana.actions = (function() {
       readFile(file).then(function(avatar) {
         console.log(avatar);
         state.avatar = avatar;
+        state.notify("avatar");
+      });
+    },
+
+    _generateDefaultAvatar: function() {
+      var canvas = document.createElement("canvas");
+      canvas.width = 150;
+      canvas.height = 150;
+
+      Identicon.render(canvas, state.nickname).then(function(canvas) {
+        state.defaultAvatar = dataUrlToArrayBuffer(canvas.toDataURL());
         state.notify("avatar");
       });
     },

@@ -18,8 +18,15 @@ var App = (function() {
       .addEventListener("click", this.onTakePicture.bind(this));
     this.el.querySelector('input[type=file]')
       .addEventListener("change", this.onFiles.bind(this));
+    this.el.querySelector('input[type=text]')
+      .addEventListener("input", this.onNickname.bind(this));
     this.el.querySelector('[data-name=form]')
       .addEventListener("submit", this.joinRoom.bind(this));
+
+    // Makes sure to display the identicon if the field is prefilled.
+    var input = this.el.querySelector('input[type=text]');
+    if (input.value)
+      input.dispatchEvent(new Event("input"));
   }
 
   App.prototype = {
@@ -36,6 +43,12 @@ var App = (function() {
 
     onFiles: function(event) {
       actions.importAvatar(event.target.files[0]);
+    },
+
+    onNickname: function(event) {
+      event.preventDefault();
+      var nickname = this.el.querySelector('input[type=text]').value;
+      actions.updateNickname(nickname);
     },
 
     updateAvatar: function() {
