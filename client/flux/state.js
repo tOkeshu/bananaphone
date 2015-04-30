@@ -16,6 +16,7 @@ window.Banana.state = (function() {
     token:     null,  // secret token
     connected: false,
     peers:     {},    // peer connections
-    room:      room
+    room:      room,
+    panel:     "form"
   });
 }());

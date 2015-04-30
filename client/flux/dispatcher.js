@@ -10,6 +10,16 @@ window.Banana.actions = (function() {
   }
 
   Dispatcher.prototype = {
+    joinRoom: function(nickname) {
+      navigator.getUserMedia({audio: true}, function(localStream) {
+        this.listen(localStream);
+      }.bind(this), function(err) {
+        console.error("getUserMedia Failed: " + err);
+      });
+      state.nickname = nickname;
+      state.notify("nickname");
+    },
+
     listen: function(stream) {
       this.stream = stream;
 
@@ -21,6 +31,9 @@ window.Banana.actions = (function() {
       this.source.on("offer",        this._onOffer.bind(this));
       this.source.on("answer",       this._onAnswer.bind(this));
       this.source.on("icecandidate", this._onIceCandidate.bind(this));
+
+      state.panel = "peers";
+      state.notify("panel");
     },
 
     toggleMute: function(id) {
