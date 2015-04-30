@@ -120,6 +120,12 @@ window.Banana.actions = (function() {
 
     _setupPeer: function(peer) {
       peer.on("icecandidate", this._newIceCandidate.bind(this, peer));
+      peer.on("connected", this._sendMetadata.bind(this, peer));
+      peer.on("metadata", function(metadata) {
+        peer.nickname  = metadata.nickname;
+        peer.avatar    = metadata.attachements.avatar;
+        state.notify("peers:" + peer.id + ":metadata");
+      });
       peer.addStream(this.stream, state.muted);
     },
 
@@ -133,6 +139,16 @@ window.Banana.actions = (function() {
       state.peers[peerId].createAnswer(offer, function(answer) {
         this._post({type: 'answer', peer: peerId, payload: {answer: answer}});
       }.bind(this));
+    },
+
+    _sendMetadata: function(peer) {
+      peer.send({
+        type: "metadata",
+        nickname: state.nickname,
+        attachements: {
+          avatar: state.avatar
+        }
+      });
     },
 
     _post: function(message) {

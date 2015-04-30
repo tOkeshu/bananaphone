@@ -17,6 +17,8 @@ window.Banana.state = (function() {
     connected: false,
     peers:     {},    // peer connections
     room:      room,
+    nickname:  null,
+    avatar:    null,
     panel:     "form"
   });
 }());

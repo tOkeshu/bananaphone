@@ -1,42 +1,78 @@
 var Buddy = (function() {
-  var state = Banana.state;
+  var state   = Banana.state;
   var actions = Banana.actions;
 
   function Buddy(id, isAvatar) {
     this.id = id;
     this.isAvatar = !!isAvatar;
-    this.el = shaven(
-      ["li", {"class": (isAvatar ? "me" : ""), "data-id": this.id},
-        ["aside.pack-end",
-          ["img.avatar", {
-            "src": "/static/images/k.png",
-            "title": this.id,
-            "style": "background-color: #" + this.id.slice(-6)
-          }]
-        ],
-        ["p.nickname", "Unamed"],
-        ["div.progress",
-          ["div.bar", {"style": "width: 33%"}]
-        ]
-      ])[0];
+    this.peer = state.peers[this.id];
 
-    state.listen("peers:" + id + ":mute", this.onMute.bind(this));
-    this.el.addEventListener("click", this.toggleMute.bind(this));
+    this.render();
+
+    state.listen("peers:" + id + ":mute", this.render.bind(this));
+    state.listen("peers:" + id + ":metadata", this.render.bind(this));
   }
 
   Buddy.prototype = {
-    toggleMute: function() {
+    toggleMute: function(event) {
+      event.preventDefault();
       actions.toggleMute(this.id);
     },
 
-    onMute: function() {
-      var muted = this.isAvatar ? state.muted : state.peers[this.id].muted;
+    render: function() {
+      var dom, classList, avatar;
 
-      if (muted)
-        this.el.classList.add("muted");
-      else
-        this.el.classList.remove("muted");
-    }
+      if (this.isAvatar) {
+        classList = ["me", state.muted ? "muted" : ""].join(" ");
+        dom = [
+          "li.me", {"class": classList, "data-id": this.id},
+            ["div",
+              ["a", {"href": "#"},
+                ["p.nickname", state.nickname],
+                state.muted ? ["p.info", "muted"] : []
+              ],
+             ["img", {src: URL.createObjectURL(state.blobAvatar)}]
+            ]
+        ];
+      } else {
+        classList = this.peer.muted ? "muted" : "";
+        dom = [
+          "li", {"class": classList, "data-id": this.id},
+            this.peer.connected ? this._peer() : this._loader(),
+        ];
+      }
+
+      var el = shaven(dom)[0];
+      if (this.el) {
+        this.el.parentNode.replaceChild(el, this.el)
+        this.el = el;
+      } else {
+        this.el = el;
+      }
+
+      this.el.addEventListener("click", this.toggleMute.bind(this));
+    },
+
+    _peer: function() {
+      var connected = this.peer.connected;
+      var muted     = this.peer.muted;
+      var avatar    = null;
+
+      if (this.peer.avatar)
+        avatar = new Blob([this.peer.avatar], {type: "image/png"});
+
+      return ["div",
+               ["a", {"href": "#"},
+                 ["p.nickname", this.peer.nickname],
+                 muted ? ["p.info", "muted"] : []
+               ],
+               avatar ? ["img", {src: URL.createObjectURL(avatar)}] : []
+             ];
+    },
+
+    _loader: function() {
+      return ["div.ball-pulse", ["div"], ["div"], ["div"]];
+    },
   };
 
   return Buddy;

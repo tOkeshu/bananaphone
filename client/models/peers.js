@@ -7,6 +7,9 @@ var Peer = (function() {
       username: 'hibuddy'
     }]
   };
+  var encoder = new tnetbin.Encoder({arraybuffer: true});
+  var decoder = new tnetbin.Decoder();
+  var attachementsDecoder = new tnetbin.Decoder({arraybuffer: true});
 
   function Peer(id) {
     var pc = new RTCPeerConnection(CONFIG);
@@ -19,9 +22,21 @@ var Peer = (function() {
       this.trigger("icecandidate", event);
     }.bind(this);
 
-    this.id = id;
-    this.pc = pc;
-    this.audio = document.createElement("audio");
+    var dc = pc.createDataChannel("banana", {id: 0, negotiated: true});
+    dc.onopen = this._onDatachannelOpen.bind(this);
+    dc.onmessage = this._onMessage.bind(this);
+    dc.onclose = this.trigger.bind(this, "disconnected");
+    dc.binaryType = "arraybuffer";
+
+    this.id       = id;
+    this.pc       = pc;
+    this.dc       = dc;
+    this.queue    = [];
+
+    this.audio    = document.createElement("audio");
+    this.nickname = null;
+    this.avatar   = null;
+    this.connected = false;
   }
 
   Peer.prototype = {
@@ -74,6 +89,27 @@ var Peer = (function() {
       this.audio.muted = !this.audio.muted;
     },
 
+    send: function(data) {
+      var message, attachements;
+      if (this.dc.readyState === "connecting") {
+        this.queue.push(data);
+        return;
+      }
+
+      attachements = data.attachements;
+      delete data.attachements;
+
+      message = encoder.encode(data);
+      if (attachements) {
+        message = tnetbin.concatArrayBuffers([
+          message,
+          encoder.encode(attachements)
+        ]);
+      }
+
+      this.dc.send(message);
+    },
+
     _onIceStateChange: function() {
       // XXX: display an error if the ice connection failed
       console.log("ice: " + this.pc.iceConnectionState);
@@ -82,8 +118,32 @@ var Peer = (function() {
         this.trigger("failure");
       }
 
-      if (this.pc.iceConnectionState === "connected")
+      if (this.pc.iceConnectionState === "connected") {
+        this.connected = true;
         this.trigger("connected");
+      }
+    },
+
+    _onDatachannelOpen: function() {
+      while (this.queue.length > 0) {
+        this.send(this.queue.shift());
+      }
+    },
+
+    _onMessage: function(event) {
+      var payload, message, remain;
+
+      payload = decoder.decode(event.data);
+      message = payload.value;
+      remain  = payload.remain;
+
+      if (remain) {
+        payload = attachementsDecoder.decode(remain);
+        message.attachements = payload.value;
+      } else
+        message.attachements = {}
+
+      this.trigger(message.type, message);
     },
 
     _onError: function(error) {
