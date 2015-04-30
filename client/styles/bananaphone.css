@@ -1,7 +1,31 @@
+html {
+    font-size: 62.5%;
+    height: 100%;
+}
+
+body {
+  overflow: hidden;
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Fira Sans';
+  color: #444; /* #333; */
+  height: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+body > article {
+  height: 100%;
+}
+
 .avatar {
     border-radius: 50%;
     width: 100px;
     height: 100px;
+    border: 0.1rem solid #e7e7e7;
+    display: inline-block;
 }
 
 .me .avatar {
@@ -29,6 +53,101 @@
 }
 
 .hidden {
-    display: none;
+    display: none !important;
+}
+
+.room > header {
+    /* background-color: #5244AB; */
+    /* background-color: #FEE051; */
+    background-color: #FFE47A;
+    color: #444; /* #333; */
+    /* color: #FFF; */
+    display: flex;
+}
+
+.room > header > h1 {
+    font-size: 2.3rem;
+    line-height: 5rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-weight: 300;
+    font-style: italic;
+    text-align: center;
+
+    margin: 0px;
+    overflow: hidden;
+    flex: 1 0 auto;
+    max-width: calc(100% - 100px);
+}
+
+.room > header > a {
+    min-width: 5rem;
+    /* font-size: 1.5rem; */
+    line-height: 5rem;
+    text-align: center;
+    color: #444; /* #333; */
+    /* color: #FFF; */
+}
+
+.room > header > a:hover {
+    background-color: rgba(0, 0, 0, 0.07);
+}
+
+.room > ul {
+    list-style: outside none none;
+    margin: 0px;
+    /* padding: 0px; */
+    overflow: auto;
+    height: 100%;
+    padding: 0px 1.5rem;
+}
+
+.room > ul > li {
+    border-bottom: 0.1rem solid #E7E7E7;
+}
+
+.room > ul > li a {
+    display: flex;
+    min-height: 6rem;
+    flex-direction: column;
+    width: 100%;
+}
+
+.room > ul > li p {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex: 1 0 2.2rem;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: medium none;
+    margin: 0px;
+
+    font-size: 1.5rem;
+    color: #858585;
+}
+
+.room > ul > li p:first-of-type {
+    font-size: 1.8rem;
+    padding: 1rem 0px 0px;
+    color: #444; /* #333; */
+    /* color: #333; */
+}
+
+.room > ul > li p:first-of-type:last-of-type {
+    padding: 0px;
+}
+
+.room > ul > li > div {
+    display: flex;
+}
+
+.room > ul > li img {
+    width: 5rem;
+    height: 5rem;
+    margin: 0.5rem;
+    border-radius: 50%;
 }
 
