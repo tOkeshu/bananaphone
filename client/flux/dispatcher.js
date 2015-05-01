@@ -2,6 +2,11 @@ window.Banana = window.Banana || {};
 window.Banana.actions = (function() {
   var state = Banana.state;
 
+  var SOUNDS = {
+    popIn:  "/static/sounds/popin.mp3",
+    popOut: "/static/sounds/popout.mp3"
+  };
+
   function readFile(file) {
     return new Promise(function(resolve, reject) {
       var reader = new FileReader();
@@ -35,6 +40,18 @@ window.Banana.actions = (function() {
   }
 
   Dispatcher.prototype = {
+    get sounds() {
+      return {
+        popIn: function() {
+          new Audio(SOUNDS.popIn).play();
+        },
+
+        popOut: function() {
+          new Audio(SOUNDS.popOut).play();
+        }
+      }
+    },
+
     joinRoom: function(nickname) {
       navigator.getUserMedia({audio: true}, function(localStream) {
         this.listen(localStream);
@@ -109,6 +126,7 @@ window.Banana.actions = (function() {
       state.token = message.token
       state.connected = true;
 
+      this.sounds.popIn();
       state.notify("me");
       state.notify("token");
       state.notify("connected");
@@ -137,6 +155,7 @@ window.Banana.actions = (function() {
       }, {});
 
       state.notify("peers:remove", peer);
+      this.sounds.popOut();
     },
 
     _onOffer: function(event) {
@@ -177,8 +196,9 @@ window.Banana.actions = (function() {
       peer.on("metadata", function(metadata) {
         peer.nickname  = metadata.nickname;
         peer.avatar    = metadata.attachements.avatar;
+        this.sounds.popIn();
         state.notify("peers:" + peer.id + ":metadata");
-      });
+      }.bind(this));
       peer.addStream(this.stream, state.muted);
     },
 
