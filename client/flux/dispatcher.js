@@ -94,7 +94,11 @@ window.Banana.actions = (function() {
 
       Identicon.render(canvas, state.nickname).then(function(canvas) {
         state.defaultAvatar = dataUrlToArrayBuffer(canvas.toDataURL());
-        state.notify("avatar");
+        // We don't trigger the event if a non-default avatar was provided.
+        // Hence, the data is still available via state.defaultAvatar
+        // but it prevents the UI from flickering at each nickname change.
+        if (state.avatar === state.defaultAvatar)
+          state.notify("avatar");
       });
     },
 
